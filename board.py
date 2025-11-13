@@ -56,3 +56,42 @@ def get_square_under_mouse(square_size):
     col = mouse_pos[0] // square_size
     row = mouse_pos[1] // square_size
     return chess.square(col, 7 - row)
+
+
+def draw_highlights(window, board, selected_square, square_size):
+
+    if selected_square is None:
+        return
+
+    select_color = (255, 215, 0)
+    capture_color = (230, 60, 60)
+    move_color = (255, 235, 59)
+
+    sel_col, sel_row = chess.square_file(selected_square), chess.square_rank(selected_square)
+    sel_x, sel_y = sel_col * square_size, (7 - sel_row) * square_size
+
+    pygame.draw.rect(
+        window,
+        select_color,
+        pygame.Rect(sel_x, sel_y, square_size, square_size),
+        width=4
+    )
+
+    legal_moves = [m for m in board.legal_moves if m.from_square == selected_square]
+
+    for move in legal_moves:
+        to_square = move.to_square
+        to_col, to_row = chess.square_file(to_square), chess.square_rank(to_square)
+        x, y = to_col * square_size, (7 - to_row) * square_size
+
+        if board.is_capture(move):
+            pygame.draw.rect(
+                window,
+                capture_color,
+                pygame.Rect(x, y, square_size, square_size),
+                width=4
+            )
+        else:
+            center = (x + square_size // 2, y + square_size // 2)
+            radius = max(6, square_size // 7)
+            pygame.draw.circle(window, move_color, center, radius)

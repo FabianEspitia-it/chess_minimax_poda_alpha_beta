@@ -1,6 +1,6 @@
 import pygame
 import chess
-from board import draw_board, draw_pieces, load_pieces, get_square_under_mouse
+from board import draw_board, draw_pieces, load_pieces, get_square_under_mouse, draw_highlights
 from ai import make_ai_move
 
 
@@ -30,14 +30,21 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN and turn == chess.WHITE:
             square = get_square_under_mouse(SQUARE_SIZE)
-            if selected_square:
-                move = chess.Move(selected_square, square)
-                if move in board.legal_moves:
-                    board.push(move)
-                    turn = chess.BLACK
-                selected_square = None
+            if selected_square is not None:
+                if square == selected_square:
+                    selected_square = None
+                else:
+                    move = chess.Move(selected_square, square)
+                    if move in board.legal_moves:
+                        board.push(move)
+                        turn = chess.BLACK
+                        selected_square = None
+                    else:
+                        piece = board.piece_at(square)
+                        selected_square = square if (piece and piece.color == turn) else selected_square
             else:
-                selected_square = square if board.piece_at(square) else None
+                piece = board.piece_at(square)
+                selected_square = square if (piece and piece.color == turn) else None
 
     if turn == chess.BLACK:
         make_ai_move(board)
@@ -45,6 +52,7 @@ while running:
 
     draw_board(window, SQUARE_SIZE)
     draw_pieces(window, board, pieces, SQUARE_SIZE)
+    draw_highlights(window, board, selected_square, SQUARE_SIZE)
     pygame.display.flip()
 
 pygame.quit()

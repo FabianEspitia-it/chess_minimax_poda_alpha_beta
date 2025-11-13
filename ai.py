@@ -165,7 +165,7 @@ def minimax_alphabeta(board, depth, alpha, beta, is_maximizing_player):
         return min_eval, best_move
 
 
-def make_ai_move(board, depth=1):
+def make_ai_move(board, depth=3):
     _, best_move = minimax_alphabeta(
         board, depth, float('-inf'), float('inf'), board.turn)
 
